@@ -24,6 +24,18 @@ int* rotate_90(int* in, int radius){
 	return out;
 }
 
+int* reflection(int* in,int radius){
+	int* out = new int[radius*radius];
+	for (int i=0;i<radius;i++)
+	{
+		for (int j=0;j<radius;j++)
+		{
+			out[i*radius+radius-j-1]=in[i*radius+j];
+		}
+	}
+	return out;
+}
+
 bool compMatrix(int* a, int* b,int radius){
 	for (int i=0;i<radius;i++)
 	{
@@ -34,6 +46,29 @@ bool compMatrix(int* a, int* b,int radius){
 		}
 	}
 	return true;
+}
+
+int findRotation(int* in,int* trg,int radius){
+	int* out;
+	//1
+	out = rotate_90(in,radius);
+	if(compMatrix(trg,out,radius)) 
+		return 1;
+	out = rotate_90(out,radius);
+	if(compMatrix(trg,out,radius)) 
+		return 2;
+	out = rotate_90(out,radius);
+	if(compMatrix(trg,out,radius)) 
+		return 3;
+	return -1;
+}
+
+int findReflection(int* in,int* trg,int radius){
+	int* out = reflection(in,radius);
+	if(compMatrix(out,trg,radius)){
+		return 4;
+	}
+	return -1;
 }
 
 int main() {
@@ -63,48 +98,27 @@ int main() {
 			trg[i*radius+j] = tmp=='@'?0:1;
 		}
 	}
-
-	for (int i=0;i<radius;i++)
-	{
-		for (int j=0;j<radius;j++)
-		{
-			printf("%d",trg[i*radius+j]);
-		}
-		printf("\n");
-	}
-	int* out = rotate_90(src,radius);
-
-	printf("%d",compMatrix(trg,out,radius));
-	//number
-
-	
-	//while(std::getline(fin,line)){
-	//	std::transform(line.begin(), line.end(),line.begin(), ::toupper);
-	//	for(int i=0;i<line.length();i++){
-	//		
-	//	}
-	//}
-	/*string comet;
-	string group;
-	if(!std::getline(fin,comet))
+	int rtResult = findRotation(src,trg,radius);
+	if(rtResult>0){
+		fout<<rtResult<<endl;
 		return 0;
-	if(!std::getline(fin,group))
+	}
+	int rfResult = findReflection(src,trg,radius);
+	if(rfResult>0){
+		fout<<rfResult<<endl;
 		return 0;
-	int cometCode =1, groupCode = 1;
-	std::transform(comet.begin(), comet.end(),comet.begin(), ::toupper);
-	for(int i=0;i<comet.length();i++){
-		char ch = comet[i];
-		int sym = ch&0x00FF-64;
-		cometCode = cometCode*sym;
 	}
-	std::transform(group.begin(), group.end(),group.begin(), ::toupper);
-	for(int i=0;i<group.length();i++){
-		char ch = group[i];
-		int sym = ch&0x00FF-64;
-		groupCode = groupCode*sym;
+	int* out = reflection(src,radius);
+	int cbResult = findRotation(out,trg,radius);
+	if(cbResult>0){
+		fout<<5<<endl;
+		return 0;
 	}
-
-	fout<<(groupCode%47==cometCode%47?"GO":"STAY")<<endl;*/
+	if(compMatrix(trg,out,radius)){
+		fout<<6<<endl;
+		return 0;
+	}
+	fout<<7<<endl;
 	return 0;
 }
 
